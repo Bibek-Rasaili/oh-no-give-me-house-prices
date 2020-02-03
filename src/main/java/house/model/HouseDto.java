@@ -24,9 +24,7 @@ public class HouseDto {
 
     public static HouseDto from (House house) {
         List<PurchaseDto> purchases = new ArrayList<>();
-        house.getPurchases().forEach( purchase -> {
-            purchases.add(PurchaseDto.from(purchase));
-        });
+        house.getPurchases().forEach( purchase -> purchases.add(PurchaseDto.from(purchase)));
 
         return new HouseDto(
                 house.getID(),

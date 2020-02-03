@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.ResponseEntity;
 
@@ -29,12 +30,15 @@ class HouseResourceControllerTest {
     private String houseID;
     private HouseDto houseDto;
     private List<HouseDto> houseDtos;
+    String date1;
+    String date2;
 
     private Date date = new Date(System.currentTimeMillis());
     BigInteger bigIntegerValue = BigInteger.valueOf(98767897);
 
     @BeforeEach
     void setUp() {
+        MockitoAnnotations.initMocks(this);
         this.houseResourceController = new HouseResourceController(houseService);
         this.houseID = "houseID";
         List<PurchaseDto> purchaseDtos = new ArrayList<>() {{
@@ -44,6 +48,8 @@ class HouseResourceControllerTest {
         this.houseDtos = new ArrayList<>(){{
             add(houseDto);
         }};
+        this.date1 = "1994-10-08";
+        this.date2 = "1994-10-10";
     }
 
     @Test
@@ -53,11 +59,6 @@ class HouseResourceControllerTest {
         ResponseEntity<HouseDto> result = houseResourceController.getHouse(houseID);
         assertEquals(200, result.getStatusCode().value());
         assertEquals(houseDto, result.getBody());
-    }
-
-    @Test
-    void addHouse() {
-
     }
 
     @Test
@@ -71,9 +72,9 @@ class HouseResourceControllerTest {
 
     @Test
     void getHouseWithSalesWithinDatesShouldReturnHouseDtos() throws ParseException {
-        when(houseService.getHousesSoldInDateRange("1994-10-08", "1994-10-10")).thenReturn(houseDtos);
+        when(houseService.getHousesSoldInDateRange(date1, date2)).thenReturn(houseDtos);
 
-        ResponseEntity<List<HouseDto>> result = houseResourceController.getHouses();
+        ResponseEntity<List<HouseDto>> result = houseResourceController.getHouseWithSalesWithinDates(date1, date2);
         assertEquals(200, result.getStatusCode().value());
         assertEquals(houseDtos, result.getBody());
     }
@@ -81,8 +82,6 @@ class HouseResourceControllerTest {
     @Test
     void getHouseWithSalesWithinDatesShouldThrowParseException() throws ParseException {
         Exception e = new ParseException("parse error", 500);
-        String date1 = "1994-10-08";
-        String date2 = "1994-10-10";
         when(houseService.getHousesSoldInDateRange(date1, date2))
                 .thenThrow(e);
 
